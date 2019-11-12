@@ -15,7 +15,7 @@ char *read_line(FILE *f) {
     char *line = (char*) malloc (buff_size*sizeof(char));
 
     if (f == NULL) {
-        printf("Error: file pointer is null.");
+        printf("Error: file pointer is null.\n");
         exit(1);
     }
 
@@ -23,8 +23,10 @@ char *read_line(FILE *f) {
         if (c == EOF) {
             /* we assume that no line was created */
             free(line);
-            if (chars_readed != 0)
-                printf("Error: file has a bad format (last line).");
+            if (chars_readed != 0) {
+                printf("Error: file has a bad format (last line).\n");
+                exit(1);
+            }
             return "EOF";
         }
 
@@ -34,7 +36,7 @@ char *read_line(FILE *f) {
             line = realloc(line, (buff_size+1)*sizeof(char));
         }
     }
-    line[chars_readed++] = '\0';
+    line[chars_readed] = '\0';
 
     return line;
 }
@@ -42,19 +44,39 @@ char *read_line(FILE *f) {
 
 data_frame *read_csv(csv_file* file) {
 
-    int rows = 0;
-    char *line;
+    int row = 0, col = 0, line_len = 0;
+    long double num;
+    char *line, *str_value;
+    data_frame *df = calloc(1, sizeof(data_frame));
 
     FILE* f = fopen(file->file_path, "r");
-    if (!f)
+    if (f == NULL)
         printf("Error: Couldn't open csv file in path: %s", file->file_path);
 
+    // create data-frame matrix
+    df->value = (long double**)malloc(file->num_rows*sizeof(long double*));
+    for (int i = 0; i < file->num_rows; i++)
+        df->value[i] = (long double*)malloc(file->num_cols*sizeof(long double));
+
+    if (file->header)
+        read_line(f);
+
+    // fill data-frame matrix
     while ((line = read_line(f)) != "EOF") {
-        printf("line %d: %s\n", rows++, line);
-        /* TODO:
-         *  1- split line by commas and cast these values in double
-        */
+        str_value = strtok(line, file->sep);
+        col = 0;
+        while(str_value != NULL) {
+            sscanf(str_value, "%Lf", &num);
+            df->value[row][col] = num;
+            str_value = strtok(NULL, file->sep);
+            col++;
+        }
+        row++;
+        free(line);
     }
     fclose(f);
 
+    df->row_size = row;
+    df->col_size = col;
+    return df;
 }
