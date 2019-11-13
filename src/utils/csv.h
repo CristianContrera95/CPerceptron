@@ -9,6 +9,12 @@
 #include <string.h>
 #include <ctype.h>
 
+/*
+#ifdef WINDOWS_OS
+#include <windows.h> // this is for Windows
+#endif
+*/
+
 
 struct csv_file_st {
     char *file_path;
@@ -29,15 +35,15 @@ struct data_frame_st {
 };
 
 
-typedef struct csv_file_st csv_file;
-typedef struct data_frame_st data_frame;
+typedef struct csv_file_st *csv_file;
+typedef struct data_frame_st *data_frame;
 
 
 /* functions list */
 
-char *read_line(FILE *f);
+char *read_line(FILE *f, int buffer);
 
-data_frame *read_csv(csv_file* file);
+data_frame read_csv(csv_file file);
 
 
 #endif //CPERCEPTRON_CSV_H

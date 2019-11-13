@@ -7,9 +7,9 @@
 #define BUFFER_SIZE 1000
 
 
-char *read_line(FILE *f) {
+char *read_line(FILE *f, const int buffer) {
 
-    int buff_size = BUFFER_SIZE;
+    int buff_size = buffer;
     int chars_readed = 0;
     char c;
     char *line = (char*) malloc (buff_size*sizeof(char));
@@ -32,7 +32,7 @@ char *read_line(FILE *f) {
 
         line[chars_readed++] = c;
         if (chars_readed == buff_size) {
-            buff_size = buff_size + 200;
+            buff_size += (int)buffer*0.2;
             line = realloc(line, (buff_size+1)*sizeof(char));
         }
     }
@@ -42,12 +42,12 @@ char *read_line(FILE *f) {
 }
 
 
-data_frame *read_csv(csv_file* file) {
+data_frame read_csv(csv_file file) {
 
     int row = 0, col = 0, line_len = 0;
     long double num;
     char *line, *str_value;
-    data_frame *df = calloc(1, sizeof(data_frame));
+    data_frame df = calloc(1, sizeof(struct data_frame_st));
 
     FILE* f = fopen(file->file_path, "r");
     if (f == NULL)
@@ -59,10 +59,10 @@ data_frame *read_csv(csv_file* file) {
         df->value[i] = (long double*)malloc(file->num_cols*sizeof(long double));
 
     if (file->header)
-        read_line(f);
+        free(read_line(f, 200));
 
     // fill data-frame matrix
-    while ((line = read_line(f)) != "EOF") {
+    while (strcmp((line = read_line(f, file->num_cols*10)), "EOF")) {
         str_value = strtok(line, file->sep);
         col = 0;
         while(str_value != NULL) {
