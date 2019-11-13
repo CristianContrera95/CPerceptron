@@ -1,11 +1,13 @@
 #include <stdio.h>
-#include "../utils/csv.h"
-#include "../utils/parse_cfg.h"
+#include "../utils/iofiles.h"
 
 
 int main(int argc, char const *argv[]){
 
-    if (strcmp(argv[1], "read_csv") || strcmp(argv[1], "all")) {
+    if (argc <= 1)
+        return 0;
+
+    if (!strcmp(argv[1], "read_csv") || !strcmp(argv[1], "all")) {
         printf("\n\n-------------Test read_csv() ------------------\n\n");
         csv_file f = calloc(1, sizeof(struct csv_file_st));
         f->file_path = "../../data/df_example.csv";
@@ -25,10 +27,10 @@ int main(int argc, char const *argv[]){
     }
 
 
-    if (strcmp(argv[1], "parse_config") || strcmp(argv[1], "all")) {
+    if (!strcmp(argv[1], "parse_config") || !strcmp(argv[1], "all")) {
         printf("\n\n-------------Test parse_config() ------------------\n\n");
         config cfg = parse_config("../../cfg/perceptron.cfg");
-        printf("%s\n%d, %d\n", cfg->file_path, cfg->cols, cfg->rows);
+        printf("%s\n%d, %d\n%d\n", cfg->file_path, cfg->cols, cfg->rows, cfg->shuffle);
     }
 
     return 0;

@@ -1,10 +1,8 @@
-/*
- Created by Cristian Contrera on 11/11/19.
-*/
+//
+// Created by anybody on 13/11/19.
+//
 
-#include "csv.h"
-
-#define BUFFER_SIZE 1000
+#include "iofiles.h"
 
 
 char *read_line(FILE *f, const int buffer) {
@@ -42,7 +40,7 @@ char *read_line(FILE *f, const int buffer) {
 }
 
 
-data_frame read_csv(csv_file file) {
+data_frame read_csv(csv_file file, const int tag) {
 
     int row = 0, col = 0, line_len = 0;
     long double num;
@@ -62,7 +60,7 @@ data_frame read_csv(csv_file file) {
         free(read_line(f, 200));
 
     // fill data-frame matrix
-    while (strcmp((line = read_line(f, file->num_cols*10)), "EOF")) {
+    while (strcmp((line = read_line(f, file->num_cols*10)), "EOF") != 0) {
         str_value = strtok(line, file->sep);
         col = 0;
         while(str_value != NULL) {
@@ -78,5 +76,54 @@ data_frame read_csv(csv_file file) {
 
     df->row_size = row;
     df->col_size = col;
+    df->tag = tag;
     return df;
+}
+
+
+config parse_config(const char *file_name) {
+
+    int n_value, line_num = 0;
+    char *line, *null;  // null is to hide the warnings
+    config cfg = calloc(1, sizeof(struct config_st));
+
+    FILE* f = fopen(file_name, "r");
+    if (f == NULL)
+        printf("Error: Couldn't open cfg file in path: %s", file_name);
+
+    cfg->file_path = calloc(100, sizeof(char));
+    cfg->threshold_fun = calloc(10, sizeof(char));
+
+    while (strcmp((line = read_line(f, 100)), "EOF") != 0) {
+        if (sscanf(line, "file_path=%s\n", cfg->file_path))
+            ;
+        else if (sscanf(line, "columns=%d\n", &cfg->cols))
+            ;
+        else if (sscanf(line, "rows=%d\n", &cfg->rows))
+            ;
+        else if (sscanf(line, "tag=%d\n", &cfg->tag))
+            ;
+        else if (sscanf(line, "threshold=%f\n", &cfg->threshold))
+            ;
+        else if (sscanf(line, "threshold_function=%s\n", cfg->threshold_fun))
+            ;
+        else if (sscanf(line, "learning_rate=%f\n", &cfg->learning_rate))
+            ;
+        else if (sscanf(line, "max_iter=%d\n", &cfg->max_iter))
+            ;
+        else if (sscanf(line, "tol=%f\n", &cfg->tol))
+            ;
+        else if (sscanf(line, "shuffle=%d\n", (int*)&cfg->shuffle))
+            ;
+        else if (sscanf(line, "#%s\n", null_) || sscanf(line, ";%s\n", null_) || strcmp(line, "\n"))
+            ;
+        else
+            printf("Error: bad line %d in config file\n\t\"%s\"", line_num, line);
+        line_num++;
+
+        //free(line);
+    }
+    fclose(f);
+
+    return cfg;
 }
