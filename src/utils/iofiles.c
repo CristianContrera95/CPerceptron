@@ -84,7 +84,7 @@ data_frame read_csv(csv_file file, const int tag) {
 config parse_config(const char *file_name) {
 
     int n_value, line_num = 0;
-    char *line, *null;  // null is to hide the warnings
+    char *line, *null_;  // null is to hide the warnings
     config cfg = calloc(1, sizeof(struct config_st));
 
     FILE* f = fopen(file_name, "r");

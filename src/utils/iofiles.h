@@ -11,6 +11,8 @@
 #include <string.h>
 #include <ctype.h>
 
+#include "./data_frame.h"
+
 /*
 #ifdef WINDOWS_OS
 #include <windows.h> // this is for Windows
@@ -47,13 +49,6 @@ struct csv_file_st {
      */
 };
 
-struct data_frame_st {
-    int row_size;
-    int col_size;
-    long double **value;
-    int tag;
-};
-
 
 typedef struct csv_file_st *csv_file;
 typedef struct data_frame_st *data_frame;
@@ -64,7 +59,7 @@ typedef struct config_st *config;
 
 char *read_line(FILE *f, int buffer);
 
-data_frame read_csv(csv_file file);
+data_frame read_csv(csv_file file, const int tag);
 
 config parse_config(const char *file_name);
 
