@@ -9,5 +9,8 @@ SRC = src/perceptron.c perceptron.h
 all: $(OBJ)
 	$(CC) $(CFLAGS) -o Perceptron $(OBJ)
 
+test: $(TEST)
+	$(CC) $(CFLAGS) -o Perceptron $(OBJ)
+
 clean:
 	$(RM) Perceptron
